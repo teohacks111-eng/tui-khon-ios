@@ -1,0 +1,73 @@
+name: iOS Simulator Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-simulator-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  simulator:
+    name: Build and test on iPhone Simulator
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          xcode-select -p
+          xcodebuild -version
+          xcrun simctl list devices available
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate --spec project.yml
+
+      - name: Boot an available iPhone Simulator
+        id: simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEVICE_ID="$(xcrun simctl list devices available | awk -F '[()]' '/iPhone/ && $2 ~ /^[0-9A-F-]{36}$/ { print $2; exit }')"
+          if [[ -z "${DEVICE_ID}" ]]; then
+            echo "No available iPhone simulator was found." >&2
+            exit 1
+          fi
+          echo "device_id=${DEVICE_ID}" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "${DEVICE_ID}" || true
+          xcrun simctl bootstatus "${DEVICE_ID}" -b
+
+      - name: Run unit, Core Data integration and UI tests
+        shell: bash
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project TuiKhon.xcodeproj \
+            -scheme TuiKhon \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.device_id }}" \
+            -derivedDataPath "$RUNNER_TEMP/TuiKhonDerivedData" \
+            -resultBundlePath "$RUNNER_TEMP/TuiKhonTests.xcresult" \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee "$RUNNER_TEMP/xcodebuild-test.log"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tui-khon-ios-simulator-results
+          path: |
+            ${{ runner.temp }}/TuiKhonTests.xcresult
+            ${{ runner.temp }}/xcodebuild-test.log
+          if-no-files-found: warn
+          retention-days: 14

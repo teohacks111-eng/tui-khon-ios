@@ -1,0 +1,26 @@
+# SwiftPM / Xcode build products
+.bsp/
+.build/
+DerivedData/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+*.xcresult/
+.DS_Store
+
+# Generated app packages and local xtool artifacts
+*.ipa
+artifacts/
+xtool/
+*.dSYM/
+
+# Local credentials and separate PWA deployment settings
+.env
+.env.*
+web-preview/
+.vercel/
+
+# Signing material
+*.p12
+*.mobileprovision
+*.provisionprofile

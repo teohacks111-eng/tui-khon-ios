@@ -1,0 +1,61 @@
+name: TuiKhon
+options:
+  bundleIdPrefix: vn.tuikhon
+  deploymentTarget:
+    iOS: "18.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+    CODE_SIGNING_ALLOWED: "NO"
+targets:
+  TuiKhon:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/TuiKhon
+    resources:
+      - path: Resources/PrivacyInfo.xcprivacy
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.tuikhon.app
+        INFOPLIST_FILE: TuikKhon-Info.plist
+        GENERATE_INFOPLIST_FILE: "YES"
+        TARGETED_DEVICE_FAMILY: "1,2"
+  TuiKhonUnitTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/TuiKhonTests
+    dependencies:
+      - target: TuiKhon
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.tuikhon.unit-tests
+        GENERATE_INFOPLIST_FILE: "YES"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/TuiKhon.app/TuiKhon"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+  TuiKhonUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: Tests/TuiKhonUITests
+    dependencies:
+      - target: TuiKhon
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.tuikhon.ui-tests
+        GENERATE_INFOPLIST_FILE: "YES"
+        TEST_TARGET_NAME: TuiKhon
+schemes:
+  TuiKhon:
+    build:
+      targets:
+        TuiKhon: all
+        TuiKhonUnitTests: [test]
+        TuiKhonUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - TuiKhonUnitTests
+        - TuiKhonUITests

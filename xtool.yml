@@ -1,0 +1,5 @@
+version: 1
+bundleID: vn.tuikhon.app
+infoPath: TuikKhon-Info.plist
+resources:
+  - Resources/PrivacyInfo.xcprivacy

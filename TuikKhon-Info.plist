@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDisplayName</key>
+    <string>Túi Khôn</string>
+    <key>CFBundleName</key>
+    <string>Túi Khôn</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Cho phép Túi Khôn dùng camera để chụp và đính kèm hóa đơn giao dịch.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Cho phép Túi Khôn dùng micro khi bạn sử dụng tính năng ghi chú bằng giọng nói.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Cho phép Túi Khôn chuyển lời nói thành văn bản khi bạn sử dụng tính năng nhập liệu bằng giọng nói.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Cho phép Túi Khôn chọn ảnh hóa đơn từ thư viện ảnh trên thiết bị.</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>Cho phép Túi Khôn xác thực bằng Face ID để bảo vệ thông tin tài chính của bạn.</string>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+    </array>
+</dict>
+</plist>
