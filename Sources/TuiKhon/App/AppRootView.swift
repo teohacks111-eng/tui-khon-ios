@@ -32,6 +32,7 @@ struct AppRootView: View {
             .tint(.green)
 
             Button {
+                CrashLogger.record("Tap FAB: mở form thêm giao dịch; tab=\(selectedTab)")
                 newTransactionKind = .expense
             } label: {
                 Image(systemName: "plus")
@@ -45,6 +46,9 @@ struct AppRootView: View {
             .accessibilityIdentifier("app.addTransaction")
             .padding(.trailing, 22)
             .padding(.bottom, 82)
+        }
+        .onChange(of: selectedTab) { oldValue, newValue in
+            CrashLogger.record("Tab changed: \(oldValue) -> \(newValue)")
         }
         .sheet(item: $newTransactionKind) { selectedKind in
             TransactionEntryView(kind: selectedKind)

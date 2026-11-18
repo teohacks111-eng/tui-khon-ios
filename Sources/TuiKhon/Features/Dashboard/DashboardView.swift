@@ -61,6 +61,9 @@ struct DashboardView: View {
         .sheet(item: $entryKind) { selectedKind in
             TransactionEntryView(kind: selectedKind)
                 .environment(\.managedObjectContext, context)
+                .onAppear {
+                    CrashLogger.record("Add transaction sheet appeared: \(selectedKind.rawValue)")
+                }
         }
     }
 
@@ -125,6 +128,7 @@ struct DashboardView: View {
 
     private func actionButton(title: String, symbol: String, tint: Color, kind: TransactionKind) -> some View {
         Button {
+            CrashLogger.record("Tap dashboard quick action: \(kind.rawValue)")
             entryKind = kind
         } label: {
             Label(title, systemImage: symbol)
@@ -224,6 +228,7 @@ struct TransactionEntryView: View {
     @FetchRequest(fetchRequest: FinanceRepository.walletFetchRequest(), animation: .default)
     private var wallets: FetchedResults<NSManagedObject>
     @State private var amount = ""
+    @FocusState private var amountFieldFocused: Bool
     @State private var category = ""
     @State private var note = ""
     @State private var date = Date()
@@ -263,6 +268,7 @@ struct TransactionEntryView: View {
                 Section("Số tiền") {
                     TextField("Ví dụ: 150000", text: $amount)
                         .keyboardType(.numberPad)
+                        .focused($amountFieldFocused)
                         .font(.title2.weight(.semibold))
                         .accessibilityIdentifier("transaction.amount")
                     Text("Nhập số tiền bằng VND.")
@@ -320,6 +326,11 @@ struct TransactionEntryView: View {
             .navigationTitle(isIncome ? "Thêm khoản thu" : "Thêm khoản chi")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Xong") { amountFieldFocused = false }
+                        .accessibilityIdentifier("transaction.keyboardDone")
+                }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Hủy") { dismiss() }
                         .accessibilityIdentifier("transaction.cancel")
@@ -335,6 +346,7 @@ struct TransactionEntryView: View {
     }
 
     private func save() {
+        CrashLogger.record("Transaction save tapped: type=\(kind.rawValue), amount=\(amount), category=\(category)")
         guard let value = parsedAmount, value > 0 else {
             errorMessage = "Vui lòng nhập số tiền lớn hơn 0."
             return
@@ -353,8 +365,10 @@ struct TransactionEntryView: View {
                 destinationWalletID: destinationWalletID,
                 categoryName: cleanCategory.isEmpty ? nil : cleanCategory
             )
+            CrashLogger.record("Transaction save succeeded: type=\(kind.rawValue), amount=\(value)")
             dismiss()
         } catch {
+            CrashLogger.record("Transaction save failed: \(error.localizedDescription)")
             errorMessage = "Không thể lưu giao dịch: \(error.localizedDescription)"
         }
     }

@@ -53,6 +53,9 @@ final class TuiKhonUITests: XCTestCase {
         XCTAssertTrue(amountField.waitForExistence(timeout: 5))
         amountField.tap()
         amountField.typeText(amount)
+        let keyboardDone = app.buttons["transaction.keyboardDone"]
+        XCTAssertTrue(keyboardDone.waitForExistence(timeout: 5))
+        keyboardDone.tap()
 
         let categoryButton = app.buttons["transaction.category.\(category)"]
         XCTAssertTrue(categoryButton.waitForExistence(timeout: 5))
